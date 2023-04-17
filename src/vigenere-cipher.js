@@ -20,13 +20,69 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(direct = true) {
+    this.direct = direct;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(message, key) {
+    if ((message === undefined) || (key === undefined)) {
+      throw new Error(`Incorrect arguments!`)
+    }
+    if (!message || !key) {
+      throw new Error('Both message and key are required');
+    }
+    message = message.toUpperCase();
+    key = key.toUpperCase();
+
+    const encryptedChars = [];
+    let j = 0;
+
+    for (let i = 0; i < message.length; i++) {
+      const charCode = message.charCodeAt(i);
+
+      if (charCode >= 65 && charCode <= 90) {
+        const keyChar = key.charCodeAt(j % key.length) - 65;
+        const messageChar = charCode - 65;
+        const encryptedChar = String.fromCharCode(((messageChar + keyChar) % 26) + 65);
+        encryptedChars.push(encryptedChar);
+        j++;
+      } else {
+        encryptedChars.push(message.charAt(i));
+      }
+    }
+
+    return this.direct ? encryptedChars.join('') : encryptedChars.reverse().join('');
+  }
+
+  decrypt(message, key) {
+    if ((message === undefined) || (key === undefined)) {
+      throw new Error(`Incorrect arguments!`)
+    }
+    if (!message || !key) {
+      throw new Error('Both message and key are required');
+    }
+
+    message = message.toUpperCase();
+    key = key.toUpperCase();
+
+    const decryptedChars = [];
+    let j = 0;
+
+    for (let i = 0; i < message.length; i++) {
+      const charCode = message.charCodeAt(i);
+
+      if (charCode >= 65 && charCode <= 90) {
+        const keyChar = key.charCodeAt(j % key.length) - 65;
+        const messageChar = charCode - 65;
+        const decryptedChar = String.fromCharCode(((messageChar - keyChar + 26) % 26) + 65);
+        decryptedChars.push(decryptedChar);
+        j++;
+      } else {
+        decryptedChars.push(message.charAt(i));
+      }
+    }
+
+    return this.direct ? decryptedChars.join('') : decryptedChars.reverse().join('');
   }
 }
 
